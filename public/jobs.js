@@ -34,9 +34,36 @@ export const handleJobs = () => {
       } else if (e.target.classList.contains("editButton")) {
         message.textContent = "";
         showAddEdit(e.target.dataset.id);
+      } else if (e.target.classList.contains("deleteButton")) {
+        message.textContent = "";
+        handleDelete(e.target.dataset.id);
       }
     }
   });
+};
+
+const handleDelete = async (jobId) => {
+  enableInput(false);
+  try {
+    const response = await fetch(`/api/v1/jobs/${jobId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      message.textContent = "The job entry was deleted.";
+      showJobs();
+    } else {
+      const data = await response.json();
+      message.textContent = data.msg;
+    }
+  } catch (err) {
+    console.log(err);
+    message.textContent = "A communication error occurred.";
+  }
+  enableInput(true);
 };
 
 export const showJobs = async () => {
